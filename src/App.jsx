@@ -1,18 +1,20 @@
-import { useState } from 'react';
-import SearchBar from './components/SearchBar';
-import FoodList from './components/FoodList';
+import { useState } from "react";
+import SearchBar from "./components/SearchBar";
+import FoodList from "./components/FoodList";
 
 function App() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); // ✅ added
+  const [error, setError] = useState(null); // ✅ missing state added
 
   const handleSearch = async (query) => {
     setLoading(true);
     setError(null);
 
     try {
-      const url = `https://world.openfoodfacts.org/api/v2/search?categories_tags=${encodeURIComponent(query)}&page_size=10`;
+      const url = `https://world.openfoodfacts.org/api/v2/search?categories_tags=${encodeURIComponent(
+        query
+      )}&page_size=10`;
 
       const response = await fetch(url);
       const data = await response.json();
@@ -22,7 +24,7 @@ function App() {
       const products = data.products || [];
 
       const filtered = products.filter(
-        (p) => p.product_name && p.product_name.trim() !== ''
+        (p) => p.product_name && p.product_name.trim() !== ""
       );
 
       setResults(filtered);
@@ -44,7 +46,7 @@ function App() {
 
       {error && <p>{error}</p>} {/* ✅ show error */}
 
-      {!loading && results.length === 0 && (
+      {!loading && results.length === 0 && !error && (
         <p>Search for a food to begin</p>
       )}
 

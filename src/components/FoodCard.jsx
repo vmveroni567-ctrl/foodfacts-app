@@ -11,6 +11,7 @@ function FoodCard({ product }) {
 
       <h2>{product_name || "Unknown Product"}</h2>
       <p>{brands || "No brand"}</p>
+
       <p>Calories: {nutriments?.["energy-kcal_100g"] || 0}</p>
       <p>Protein: {nutriments?.proteins_100g || 0}g</p>
       <p>Carbs: {nutriments?.carbohydrates_100g || 0}g</p>
