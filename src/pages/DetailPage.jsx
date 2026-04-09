@@ -1,55 +1,42 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { addItem, removeItem } from "../store/savedSlice";
 
-function DetailPage({ saved, dispatch }) {
-  const { barcode } = useParams();
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+
+function DetailPage() {
+  const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const product = location.state?.product;
+  const savedItems = useSelector((state) => state.saved.items);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const res = await axios.get(
-          `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`
-        );
-        setProduct(res.data.product);
-      } catch (err) {
-        console.log("error", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  if (!product) return <div>No product</div>;
 
-    fetchProduct();
-  }, [barcode]);
+  const isSaved = savedItems.some((p) => p.code === product.code);
 
-  if (loading) return <p>Loading...</p>;
-
-  if (!product) return <p>No product found</p>;
-
-  const isSaved = saved.some((p) => p.code === barcode);
-
-  const handleSave = () => {
+  const handleClick = () => {
     if (isSaved) {
-      dispatch({ type: "REMOVE", code: barcode });
+      dispatch(removeItem(product.code));
     } else {
-      dispatch({ type: "ADD", product });
+      dispatch(addItem(product));
     }
   };
 
   return (
-    <div>
-      <button onClick={() => navigate(-1)}>Back</button>
+    <Container>
+      <Typography variant="h5">{product.product_name}</Typography>
+      <Typography>{product.brands}</Typography>
 
-      <h2>{product.product_name || "No name available"}</h2>
-
-      <button onClick={handleSave}>
+      <Button variant="contained" onClick={handleClick}>
         {isSaved ? "Remove" : "Save"}
-      </button>
-    </div>
+      </Button>
+
+      <Button onClick={() => navigate(-1)}>Back</Button>
+    </Container>
   );
 }
 
